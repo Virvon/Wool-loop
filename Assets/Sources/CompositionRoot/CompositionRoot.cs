@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Sources.BaseLogic;
 using Sources.BaseLogic.JointLogic;
+using Sources.BaseLogic.RopeLogic;
 using Sources.Infrastructure.JointModel;
 using Sources.Services.InputService;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Sources.CompositionRoot
         [SerializeField] private Camera _camera;
         [SerializeField] private List<JointValidationData> _jointsDatas;
         [SerializeField] private JointListView _jointListView;
+        [SerializeField] private Rope _ropePrefab;
         
         private IInputService _inputService;
         private Player _player;
@@ -20,8 +22,7 @@ namespace Sources.CompositionRoot
         private void Start()
         {
             _inputService = new DesktopInputService();
-            RopeCreator ropeCreator = new();
-            _player = new(_inputService, ropeCreator, _camera);
+            _player = new(_inputService, _camera, _ropePrefab);
 
             CreateJoints();
         }

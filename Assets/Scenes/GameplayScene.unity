@@ -265,6 +265,7 @@ MonoBehaviour:
     Position: {x: 0, y: -2}
     TargetAngle: 0
   _jointListView: {fileID: 1292973340}
+  _ropePrefab: {fileID: 6909604777610958747, guid: 1bf5153d31146584bb4fb3712b1e532d, type: 3}
 --- !u!4 &1169510504
 Transform:
   m_ObjectHideFlags: 0

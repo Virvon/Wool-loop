@@ -5,32 +5,35 @@ using Sources.Infrastructure.JointModel;
 using UnityEngine;
 using Joint = Sources.BaseLogic.JointLogic.Joint;
 
-namespace Sources.BaseLogic
+namespace Sources.Infrastructure.RopeModel
 {
-    public class Rope : MonoBehaviour
+    public class RopeModel
     {
-        [SerializeField] private LineRenderer _lineRenderer;
-        [SerializeField] private ContactFilter2D _filter;
-
         private List<JointData> _joints;
         private Vector3 _endPoint;
         private Vector3 _startPoint;
         private int _endPointIndex;
 
-        private void Awake()
+        public RopeModel(Vector3 startPosition)
         {
             _joints = new();
 
-            _endPoint = transform.position;
-            _startPoint = transform.position;
+            _endPoint = startPosition;
+            _startPoint = startPosition;
             
-            UpdateRenderer();
+            OnUpdated();
         }
+
+        public event Action<int, Vector3> Moved;
+        public event Action<IReadOnlyList<Vector3>> Updated;
+
+        public Vector3 StartPoint => _startPoint;
+        public Vector3 EndPoint => _endPoint;
 
         public void Move(Vector2 position)
         {
             _endPoint = position;
-            _lineRenderer.SetPosition(_endPointIndex, _endPoint);
+            Moved?.Invoke(_endPointIndex, _endPoint);
             
             Vector2 startCastPosition = _endPoint;
             Vector2 endCastPosition = GetLastFixedPoint();
@@ -54,7 +57,7 @@ namespace Sources.BaseLogic
                     _joints[_joints.Count - 1] = jointData;
                 }
                 
-                UpdateRenderer();
+                OnUpdated();
             }
             else if(TryGetLastJoint(out Joint lastJoint))
             {
@@ -84,9 +87,24 @@ namespace Sources.BaseLogic
                         _joints[_joints.Count - 1] = jointData;
                     }
                     
-                    UpdateRenderer();
+                    OnUpdated();
                 }
             }
+        }
+
+        private void OnUpdated()
+        {
+            List<Vector3> points = new();
+
+            points.Add(_startPoint);
+
+            foreach (JointData _jointData in _joints)
+                points.AddRange(_jointData.Points);
+
+            points.Add(_endPoint);
+            _endPointIndex = points.Count - 1;
+
+            Updated?.Invoke(points);
         }
 
         private Vector3 GetPenultimateFixedPoint()
@@ -104,7 +122,7 @@ namespace Sources.BaseLogic
             }
         }
 
-        private static Vector2 GetPointPosition(Vector2 contactPosition, Joint joint)
+        private Vector2 GetPointPosition(Vector2 contactPosition, Joint joint)
         {
             float jointOffset = 0.1f;
             
@@ -157,22 +175,6 @@ namespace Sources.BaseLogic
 
         private bool TryGetPenultimateFixedPoint(out Vector3 point) =>
             _joints.Last().TryGetPenultimateFixedPoint(out point);
-
-        private void UpdateRenderer()
-        {
-            List<Vector3> points = new();
-            
-            points.Add(_startPoint);
-
-            foreach (JointData pointData in _joints)
-                points.AddRange(pointData.Points);
-            
-            points.Add(_endPoint);
-            _endPointIndex = points.Count - 1;
-
-            _lineRenderer.positionCount = points.Count;
-            _lineRenderer.SetPositions(points.ToArray());
-        }
         
         private bool TryCircleCast(Vector2 startCastPosition, Vector2 endCastPosition, out RaycastHit2D hitInfo)
         {
