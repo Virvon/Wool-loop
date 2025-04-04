@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sources.Infrastructure.JointModel;
 using UnityEngine;
+using Joint = Sources.BaseLogic.JointLogic.Joint;
 
 namespace Sources.BaseLogic
 {
@@ -72,16 +74,8 @@ namespace Sources.BaseLogic
                             ((_endPoint - lastFixedPoint).normalized + (penultimateFixedPoint - lastFixedPoint).normalized).normalized,
                             (lastJoint.transform.position - lastFixedPoint).normalized);
                         
-                        Debug.DrawRay(GetLastFixedPoint(), (_endPoint + penultimateFixedPoint).normalized, Color.yellow);
-                        Debug.DrawRay(GetLastFixedPoint(), ((_endPoint - GetLastFixedPoint()).normalized + (penultimateFixedPoint - GetLastFixedPoint()).normalized).normalized , Color.green);
-                        Debug.DrawRay(GetLastFixedPoint(), (lastJoint.transform.position - GetLastFixedPoint()), Color.green);
-                        
                         if (dot < 0)
-                        {
                             _joints.RemoveAt(_joints.Count - 1);
-                            
-                            Debug.Log("remove joint");
-                        }
                     }
                     else
                     {

@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Joint = Sources.BaseLogic.JointLogic.Joint;
 
-namespace Sources.BaseLogic
+namespace Sources.Infrastructure.JointModel
 {
     public struct JointData
     {
