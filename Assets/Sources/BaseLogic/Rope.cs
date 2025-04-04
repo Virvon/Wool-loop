@@ -85,7 +85,9 @@ namespace Sources.BaseLogic
                     }
                     else
                     {
-                        GetLastJointData().RemoveLastPoint();
+                        JointData jointData = GetLastJointData();
+                        jointData.RemoveLastPoint();
+                        _joints[_joints.Count - 1] = jointData;
                     }
                     
                     UpdateRenderer();
@@ -141,7 +143,7 @@ namespace Sources.BaseLogic
 
         private bool TryGetLastsJointData(out JointData jointData)
         {
-            jointData = new();
+            jointData = new ();
 
             if (_joints.Count == 0)
                 return false;
